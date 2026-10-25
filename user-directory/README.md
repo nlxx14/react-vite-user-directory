@@ -1,16 +1,7 @@
-# React + Vite
+1.**Why is it dangerous to store passwords in plain text, and how does hashing prevent harm if the database is compromised?** If passwords are saved in plain text, anyone who gets into the database can just read them. That could be a hacker, a leaked backup, or even someone who works there. A lot of people reuse the same password everywhere, so one leak can put their email and bank accounts at risk too. With hashing, the database only stores a scrambled version that can’t be turned back into the original. Bcrypt also adds a salt and is slow on purpose, so a thief would have to guess passwords one at a time, which takes forever.
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+2.**The login endpoint returns the same error for "user not found" and "wrong password." Why is this better than giving specific messages?** If the app says “user not found” in one case and “wrong password” in the other, attackers can tell which usernames are real just by trying a bunch of them. They can then spend their time guessing passwords only for accounts that actually exist. Using one message like “Invalid credentials” tells them nothing useful. Real users aren’t hurt by it, since they just double-check what they typed and try again.
 
-Currently, two official plugins are available:
+3.**In your own words, what does the middleware do on every protected request, and why is it better than putting token-checking code inside every route handler?** Every time someone hits a protected route, the middleware grabs the token from the Authorization header and checks it against the secret key. If the token is missing, fake, or expired, it stops right there and sends back a 401. If it’s good, it saves the user info on the request and calls next() so the route can do its job. This is better than checking tokens inside every route because I only write the code once, and if I need to change something I only fix it in one place. It also means I can’t accidentally forget to protect a new route.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+4.**What is one thing that could still go wrong in this system (e.g., token theft, no HTTPS, weak secrets), and how would you address it in a real application?** Right now, the app doesn’t use HTTPS, so tokens get sent as plain text. Someone on the same network could grab a token and pretend to be that user until it expires. In a real app, I’d put everything behind HTTPS and keep token lifetimes short. I’d also store the JWT secret in an environment variable instead of in the code. If I wanted users to stay logged in without long-lived tokens, I’d add refresh tokens.
